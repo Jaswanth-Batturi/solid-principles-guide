@@ -10,8 +10,3 @@ export function sitePath(route = ''): string {
 export function principlePath(slug: string): string {
   return sitePath(`principles/${slug}`);
 }
-
-/** @deprecated Use principlePath — kept for component compatibility during migration */
-export function patternPath(slug: string): string {
-  return principlePath(slug);
-}

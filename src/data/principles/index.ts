@@ -3,33 +3,22 @@ import type { Principle, PrincipleLetter } from './types';
 import { letterLabels, letterHints } from './types';
 
 export type { Principle, PrincipleLetter, QuizQuestion } from './types';
-export { letterLabels, letterHints, categoryLabels, categoryHints } from './types';
-export type { Pattern, PatternCategory } from './types';
+export { letterLabels, letterHints };
 
-/** All 5 SOLID principles in learning order (S → O → L → I → D). */
 export const principles = principlesList;
-
-/** @deprecated alias for shared components */
-export const patterns = principles;
 
 export function getPrinciple(slug: string): Principle | undefined {
   return principlesList.find((p) => p.slug === slug);
 }
 
-/** @deprecated */
-export const getPattern = getPrinciple;
-
-export { enrichPrinciple, enrichPattern } from './enrich';
-export type { EnrichedPrinciple, EnrichedPattern } from './enrich';
+export { enrichPrinciple } from './enrich';
+export type { EnrichedPrinciple } from './enrich';
 
 export interface FinderRule {
   keywords: string[];
   principleSlug: string;
   hint: string;
 }
-
-/** @deprecated */
-export type FinderRuleLegacy = FinderRule & { patternSlug: string };
 
 export const finderRules: FinderRule[] = [
   {
@@ -57,4 +46,4 @@ export const finderRules: FinderRule[] = [
     principleSlug: 'dependency-inversion',
     hint: 'Depend on abstractions; inject implementations at the edges',
   },
-].map((r) => ({ ...r, patternSlug: r.principleSlug }));
+];

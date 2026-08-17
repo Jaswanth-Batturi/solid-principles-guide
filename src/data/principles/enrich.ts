@@ -9,8 +9,8 @@ export interface EnrichedPrinciple extends Principle {
   problemStatement: string;
   tradeoffIntro: string;
   sceneSteps: [string, string, string];
-  withoutPatternPains: [string, string, string];
-  withPatternWins: [string, string, string];
+  withoutPrinciplePains: [string, string, string];
+  withPrincipleWins: [string, string, string];
   codeBridge: string;
   runExpect: string;
   tryItSteps: string[];
@@ -22,8 +22,6 @@ export interface EnrichedPrinciple extends Principle {
   displayCodeAfter: string;
 }
 
-/** @deprecated */
-export type EnrichedPattern = EnrichedPrinciple;
 
 function tuple3(items: string[]): [string, string, string] {
   return [items[0] ?? '', items[1] ?? '', items[2] ?? ''];
@@ -86,8 +84,8 @@ export function enrichPrinciple(principle: Principle): EnrichedPrinciple {
     problemStatement: story.problemStatement ?? principle.problem,
     tradeoffIntro,
     sceneSteps: story.scene,
-    withoutPatternPains: story.without,
-    withPatternWins: story.with,
+    withoutPrinciplePains: story.without,
+    withPrincipleWins: story.with,
     codeBridge: story.codeBridge,
     runExpect: deriveRunExpect(runDemo),
     tryItSteps: story.tryItSteps,
@@ -100,5 +98,3 @@ export function enrichPrinciple(principle: Principle): EnrichedPrinciple {
   };
 }
 
-/** @deprecated */
-export const enrichPattern = enrichPrinciple;

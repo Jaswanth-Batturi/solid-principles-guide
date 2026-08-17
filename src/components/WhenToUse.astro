@@ -1,11 +1,10 @@
 ---
 interface Props {
-  patternName: string;
   useWhen: string[];
   skipWhen: string[];
 }
 
-const { patternName, useWhen, skipWhen } = Astro.props;
+const { useWhen, skipWhen } = Astro.props;
 ---
 
 <section id="decision" class="scroll-mt-36" aria-labelledby="decision-heading">

@@ -2,8 +2,8 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import CodeToggle from '../../components/CodeToggle.astro';
 import Quiz from '../../components/Quiz.astro';
-import PatternProblem from '../../components/PatternProblem.astro';
-import PatternStory from '../../components/PatternStory.astro';
+import PrincipleProblem from '../../components/PrincipleProblem.astro';
+import PrincipleStory from '../../components/PrincipleStory.astro';
 import TradeoffCompare from '../../components/TradeoffCompare.astro';
 import WhenToUse from '../../components/WhenToUse.astro';
 import CodeRunner from '../../components/CodeRunner.astro';
@@ -77,7 +77,7 @@ const sections = [
 
   <div class="space-y-8">
     <div id="story" class="scroll-mt-36">
-      <PatternStory
+      <PrincipleStory
         slug={principle.slug}
         icon={principle.analogyIcon}
         example={principle.exampleName}
@@ -86,7 +86,7 @@ const sections = [
       />
     </div>
 
-    <PatternProblem problemStatement={principle.problemStatement} />
+    <PrincipleProblem problemStatement={principle.problemStatement} />
 
     <div id="code" class="scroll-mt-36">
       <CodeToggle
@@ -100,16 +100,14 @@ const sections = [
 
     <div id="tradeoffs" class="scroll-mt-36">
       <TradeoffCompare
-        patternName={principle.name}
-        withoutPains={principle.withoutPatternPains}
-        withWins={principle.withPatternWins}
+        withoutPains={principle.withoutPrinciplePains}
+        withWins={principle.withPrincipleWins}
       />
     </div>
 
     <CodeRunner code={principle.runDemo} runExpect={principle.runExpect} tryItSteps={principle.tryItSteps} />
 
     <WhenToUse
-      patternName={principle.name}
       useWhen={principle.whenToUse}
       skipWhen={principle.whenNotToUse}
     />

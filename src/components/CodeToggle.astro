@@ -148,7 +148,7 @@ const afterHtml = await highlightJava(after);
     loadBtn?.addEventListener('click', () => {
       const text = getActiveText();
       if (!text) return;
-      window.dispatchEvent(new CustomEvent('pattern-runner-load', { detail: { code: text } }));
+      window.dispatchEvent(new CustomEvent('principle-runner-load', { detail: { code: text } }));
       document.getElementById('run')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
       loadBtn.textContent = 'Loaded!';
       setTimeout(() => {

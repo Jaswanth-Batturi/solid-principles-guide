@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import PatternCard from '../components/PatternCard.astro';
-import PatternFinder from '../components/PatternFinder.astro';
+import PrincipleCard from '../components/PrincipleCard.astro';
+import PrincipleFinder from '../components/PrincipleFinder.astro';
 import { principles, letterLabels, type PrincipleLetter } from '../data/principles';
 import { principlePath } from '../utils/paths';
 
@@ -89,7 +89,7 @@ const letterColor: Record<PrincipleLetter, string> = {
             <div class="grid gap-3 sm:grid-cols-2">
               {items.map((principle) => (
                 <div class="principle-card" data-category={principle.letter}>
-                  <PatternCard pattern={principle} />
+                  <PrincipleCard principle={principle} />
                 </div>
               ))}
             </div>
@@ -99,7 +99,7 @@ const letterColor: Record<PrincipleLetter, string> = {
     }
   </section>
 
-  <PatternFinder />
+  <PrincipleFinder />
 </BaseLayout>
 
 <script>

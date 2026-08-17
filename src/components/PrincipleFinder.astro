@@ -70,7 +70,7 @@ const principleUrls = Object.fromEntries(principles.map((p) => [p.slug, principl
     }
 
     matches.slice(0, 3).forEach(({ rule }) => {
-      const slug = rule.principleSlug || rule.patternSlug;
+      const slug = rule.principleSlug;
       const principle = principles.find((p) => p.slug === slug);
       if (!principle) return;
 

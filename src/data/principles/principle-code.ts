@@ -338,7 +338,3 @@ public class DipDemo {
 }`,
   ),
 };
-
-/** @deprecated */
-export const patternCode = principleCode;
-export type PatternCode = PrincipleCode;

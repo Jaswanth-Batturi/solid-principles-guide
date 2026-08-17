@@ -118,6 +118,3 @@ export function getIllustration(slug: string, fallbackIcon: string): { label: st
     svg: `<svg viewBox="0 0 64 64" class="w-full h-auto" aria-hidden="true"><text x="32" y="40" text-anchor="middle" font-size="28">${fallbackIcon}</text></svg>`,
   };
 }
-
-/** @deprecated */
-export const patternIllustrations = principleIllustrations;

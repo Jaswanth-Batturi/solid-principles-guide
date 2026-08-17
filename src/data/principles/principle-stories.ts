@@ -158,7 +158,3 @@ export const principleStories: Record<string, PrincipleStory> = {
     tryItSteps: ['Run ▶ — expect the same switch to light Philips or LED depending on injection.'],
   },
 };
-
-/** @deprecated */
-export const patternStories = principleStories;
-export type PatternStory = PrincipleStory;

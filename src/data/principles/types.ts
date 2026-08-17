@@ -21,9 +21,9 @@ export interface Principle {
   problem: string;
   solution: string;
   /** Plain-language pains when you violate the principle. */
-  withoutPatternPains?: string[];
+  withoutPrinciplePains?: string[];
   /** Plain-language wins when you follow the principle. */
-  withPatternWins?: string[];
+  withPrincipleWins?: string[];
   /** What to look for when comparing the two code blocks. */
   codeTakeaway?: string;
   whenToUse: string[];
@@ -54,11 +54,3 @@ export const letterHints: Record<PrincipleLetter, string> = {
   d: 'Depend on abstractions, not concretions',
 };
 
-/** @deprecated Alias for components that still reference PatternCategory */
-export type PatternCategory = PrincipleLetter;
-
-/** @deprecated Alias for components that still reference Pattern */
-export type Pattern = Principle;
-
-export const categoryLabels = letterLabels;
-export const categoryHints = letterHints;

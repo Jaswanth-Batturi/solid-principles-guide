@@ -1,11 +1,10 @@
 ---
 interface Props {
-  patternName: string;
   withoutPains: [string, string, string];
   withWins: [string, string, string];
 }
 
-const { patternName, withoutPains, withWins } = Astro.props;
+const { withoutPains, withWins } = Astro.props;
 ---
 
 <section aria-labelledby="tradeoff-heading">
@@ -13,8 +12,8 @@ const { patternName, withoutPains, withWins } = Astro.props;
 
   <div class="mt-5 grid gap-4 sm:grid-cols-2">
     <div class="rounded-xl border border-rose-500/30 bg-gradient-to-br from-rose-950/45 to-slate-950/40 p-5">
-      <h3 class="text-sm font-semibold uppercase tracking-wide text-rose-300">Violating {patternName}</h3>
-      <p class="mt-2 text-sm text-rose-200/70">What breaks when you ignore it:</p>
+      <h3 class="text-sm font-semibold uppercase tracking-wide text-rose-300">When you ignore it</h3>
+      <p class="mt-2 text-sm text-rose-200/70">What breaks:</p>
       <ul class="mt-3 space-y-3 text-base leading-relaxed text-slate-300">
         {withoutPains.map((item, i) => (
           <li class="flex gap-3">
@@ -26,8 +25,8 @@ const { patternName, withoutPains, withWins } = Astro.props;
     </div>
 
     <div class="rounded-xl border border-emerald-500/30 bg-gradient-to-br from-emerald-950/45 to-slate-950/40 p-5">
-      <h3 class="text-sm font-semibold uppercase tracking-wide text-emerald-300">Following {patternName}</h3>
-      <p class="mt-2 text-sm text-emerald-200/70">What improves when you apply it:</p>
+      <h3 class="text-sm font-semibold uppercase tracking-wide text-emerald-300">When you follow it</h3>
+      <p class="mt-2 text-sm text-emerald-200/70">What improves:</p>
       <ul class="mt-3 space-y-3 text-base leading-relaxed text-slate-300">
         {withWins.map((item, i) => (
           <li class="flex gap-3">
