@@ -36,8 +36,8 @@ const pageTitle = title === siteTitle ? siteTitle : `${title} · ${siteTitle}`;
     <a href="#main-content" class="skip-link">Skip to content</a>
     <header class="sticky top-0 z-50 border-b border-slate-800/80 bg-slate-950/90 backdrop-blur-md">
       <nav class="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-3.5 sm:px-6" aria-label="Main">
-        <a href={home} class="group flex items-center gap-2.5 font-semibold text-white">
-          <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600 text-xs font-bold tracking-tight">SO</span>
+        <a href={home} class="group flex items-center gap-2.5 font-semibold text-white" aria-label="SOLID Principles home">
+          <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600 text-xs font-bold tracking-tight" aria-hidden="true">SP</span>
           <span class="sm:hidden group-hover:text-indigo-300 transition-colors">SOLID</span>
           <span class="hidden sm:inline group-hover:text-indigo-300 transition-colors">{siteTitle}</span>
         </a>

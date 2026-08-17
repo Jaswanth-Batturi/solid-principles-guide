@@ -116,16 +116,16 @@ async function testHomepage(page) {
   if (!(await page.title()).includes('SOLID')) {
     record('HIGH', 'Home', `Bad title: ${await page.title()}`);
   }
-  if (await page.locator('.pattern-card').count() !== 5) {
+  if (await page.locator('.principle-card').count() !== 5) {
     record('HIGH', 'Home', 'Not 5 principle cards');
   }
 
-  await page.locator('#pattern-search').fill('responsibility');
+  await page.locator('#principle-search').fill('responsibility');
   await page.waitForTimeout(120);
-  if (await page.locator('.pattern-card:not(.hidden)').count() < 1) {
+  if (await page.locator('.principle-card:not(.hidden)').count() < 1) {
     record('HIGH', 'Home', 'Search failed');
   }
-  await page.locator('#pattern-search').fill('');
+  await page.locator('#principle-search').fill('');
 
   const chips = page.locator('[data-example]');
   for (let i = 0; i < await chips.count(); i++) {

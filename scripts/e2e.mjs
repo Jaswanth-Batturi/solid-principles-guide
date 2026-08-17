@@ -33,7 +33,7 @@ async function run() {
     record('HIGH', 'Home', `Unexpected title: ${title}`);
   }
 
-  const cardCount = await page.locator('.pattern-card').count();
+  const cardCount = await page.locator('.principle-card').count();
   if (cardCount !== 5) {
     record('HIGH', 'Home', `Expected 5 principle cards, found ${cardCount}`);
   }
@@ -44,7 +44,7 @@ async function run() {
 
   for (const letter of ['S', 'O', 'L', 'I', 'D']) {
     await page.getByRole('button', { name: letter, exact: true }).click();
-    const visible = await page.locator('.pattern-card:not(.hidden)').count();
+    const visible = await page.locator('.principle-card:not(.hidden)').count();
     if (visible !== 1) {
       record('HIGH', 'Filters', `${letter} filter shows ${visible} cards, expected 1`);
     }

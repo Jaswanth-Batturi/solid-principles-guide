@@ -3,6 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import PatternCard from '../components/PatternCard.astro';
 import PatternFinder from '../components/PatternFinder.astro';
 import { principles, letterLabels, type PrincipleLetter } from '../data/principles';
+import { principlePath } from '../utils/paths';
 
 const grouped = {
   s: principles.filter((p) => p.letter === 's'),
@@ -13,10 +14,18 @@ const grouped = {
 };
 
 const letters: PrincipleLetter[] = ['s', 'o', 'l', 'i', 'd'];
+
+const letterColor: Record<PrincipleLetter, string> = {
+  s: 'border-emerald-500/40 bg-emerald-950/30 text-emerald-300 hover:border-emerald-400/60',
+  o: 'border-sky-500/40 bg-sky-950/30 text-sky-300 hover:border-sky-400/60',
+  l: 'border-amber-500/40 bg-amber-950/30 text-amber-300 hover:border-amber-400/60',
+  i: 'border-violet-500/40 bg-violet-950/30 text-violet-300 hover:border-violet-400/60',
+  d: 'border-rose-500/40 bg-rose-950/30 text-rose-300 hover:border-rose-400/60',
+};
 ---
 
 <BaseLayout title="SOLID Principles">
-  <header class="mb-10 max-w-xl">
+  <header class="mb-10 max-w-2xl">
     <p class="text-sm text-slate-500">5 principles · Java examples</p>
     <h1 class="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">
       Learn SOLID with one example each
@@ -24,6 +33,19 @@ const letters: PrincipleLetter[] = ['s', 'o', 'l', 'i', 'd'];
     <p class="mt-3 text-base leading-relaxed text-slate-400">
       Each principle uses one real-life thread all the way through — analogy, problem, code, compare, run, and quiz.
     </p>
+
+    <nav class="mt-6 flex flex-wrap gap-2" aria-label="SOLID acronym — jump to a principle">
+      {principles.map((p) => (
+        <a
+          href={principlePath(p.slug)}
+          class={`inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-sm transition-colors ${letterColor[p.letter]}`}
+          title={letterLabels[p.letter]}
+        >
+          <span class="font-bold">{p.letter.toUpperCase()}</span>
+          <span class="hidden sm:inline text-slate-400">{p.name.replace(' Principle', '')}</span>
+        </a>
+      ))}
+    </nav>
   </header>
 
   <section id="principles" class="scroll-mt-20">
@@ -31,7 +53,7 @@ const letters: PrincipleLetter[] = ['s', 'o', 'l', 'i', 'd'];
       <h2 class="text-lg font-semibold text-white">Browse principles</h2>
       <input
         type="search"
-        id="pattern-search"
+        id="principle-search"
         placeholder="Search…"
         aria-label="Search principles"
         class="w-full sm:w-56 rounded-lg border border-slate-800 bg-slate-900/80 px-3 py-2 text-sm text-white placeholder:text-slate-600 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500/40"
@@ -41,7 +63,13 @@ const letters: PrincipleLetter[] = ['s', 'o', 'l', 'i', 'd'];
     <div class="mt-4 flex flex-wrap gap-2" role="group" aria-label="Filter by letter" id="category-filters">
       <button type="button" data-filter="all" class="filter-btn rounded-md bg-indigo-600 px-3 py-1.5 text-xs font-medium text-white" aria-pressed="true">All</button>
       {letters.map((letter) => (
-        <button type="button" data-filter={letter} class="filter-btn rounded-md border border-slate-800 px-3 py-1.5 text-xs font-medium text-slate-400 hover:text-white hover:border-slate-600 transition-colors" aria-pressed="false">
+        <button
+          type="button"
+          data-filter={letter}
+          title={letterLabels[letter]}
+          class="filter-btn rounded-md border border-slate-800 px-3 py-1.5 text-xs font-medium text-slate-400 hover:text-white hover:border-slate-600 transition-colors"
+          aria-pressed="false"
+        >
           {letter.toUpperCase()}
         </button>
       ))}
@@ -54,13 +82,13 @@ const letters: PrincipleLetter[] = ['s', 'o', 'l', 'i', 'd'];
     {
       Object.entries(grouped).map(([letter, items]) =>
         items.length > 0 && (
-          <div class="mt-8 pattern-group" data-category={letter}>
+          <div class="mt-8 principle-group" data-category={letter}>
             <h3 class="mb-3 text-xs font-medium uppercase tracking-wider text-slate-500">
               {letterLabels[letter as PrincipleLetter]}
             </h3>
             <div class="grid gap-3 sm:grid-cols-2">
               {items.map((principle) => (
-                <div class="pattern-card" data-category={principle.letter}>
+                <div class="principle-card" data-category={principle.letter}>
                   <PatternCard pattern={principle} />
                 </div>
               ))}
@@ -76,9 +104,9 @@ const letters: PrincipleLetter[] = ['s', 'o', 'l', 'i', 'd'];
 
 <script>
   const filters = document.querySelectorAll('.filter-btn');
-  const cards = document.querySelectorAll('.pattern-card');
-  const groups = document.querySelectorAll('.pattern-group');
-  const searchInput = document.getElementById('pattern-search');
+  const cards = document.querySelectorAll('.principle-card');
+  const groups = document.querySelectorAll('.principle-group');
+  const searchInput = document.getElementById('principle-search');
   const searchEmpty = document.getElementById('search-empty');
 
   const applyVisibility = () => {
@@ -96,7 +124,7 @@ const letters: PrincipleLetter[] = ['s', 'o', 'l', 'i', 'd'];
 
     groups.forEach((group) => {
       const cat = group.getAttribute('data-category');
-      const visibleInGroup = Array.from(group.querySelectorAll('.pattern-card')).some(
+      const visibleInGroup = Array.from(group.querySelectorAll('.principle-card')).some(
         (c) => !c.classList.contains('hidden'),
       );
       const matchesFilter = filter === 'all' || cat === filter;

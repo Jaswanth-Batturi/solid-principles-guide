@@ -38,27 +38,27 @@ async function testHomepage(page) {
     if (body.includes(stale)) record('HIGH', 'Home', `Stale copy: "${stale}"`);
   }
 
-  if (await page.locator('.pattern-card').count() !== 5) {
+  if (await page.locator('.principle-card').count() !== 5) {
     record('HIGH', 'Home', 'Expected 5 cards');
   }
 
   // Search
-  await page.locator('#pattern-search').fill('liskov');
+  await page.locator('#principle-search').fill('liskov');
   await page.waitForTimeout(100);
-  if (await page.locator('.pattern-card:not(.hidden)').count() !== 1) {
+  if (await page.locator('.principle-card:not(.hidden)').count() !== 1) {
     record('HIGH', 'Home', 'Search "liskov" failed');
   }
-  await page.locator('#pattern-search').fill('zzzz');
+  await page.locator('#principle-search').fill('zzzz');
   await page.waitForTimeout(100);
   if (!(await page.locator('#search-empty:not(.hidden)').isVisible())) {
     record('HIGH', 'Home', 'Empty search state missing');
   }
-  await page.locator('#pattern-search').fill('');
+  await page.locator('#principle-search').fill('');
 
   // Letter filters
   for (const letter of ['S', 'O', 'L', 'I', 'D']) {
     await page.getByRole('button', { name: letter, exact: true }).click();
-    if (await page.locator('.pattern-card:not(.hidden)').count() !== 1) {
+    if (await page.locator('.principle-card:not(.hidden)').count() !== 1) {
       record('HIGH', 'Home', `Filter ${letter} wrong count`);
     }
   }
@@ -75,11 +75,16 @@ async function testHomepage(page) {
   }
 
   // Nav links
-  await page.getByLabel('Main').getByRole('link', { name: 'Principles', exact: true }).click();
-  await page.waitForTimeout(150);
-  if (!page.url().includes('#principles')) record('MED', 'Nav', 'Principles anchor failed');
-
-  await page.getByLabel('Main').getByRole('link', { name: 'SOLID Principles' }).click();
+  // SOLID acronym quick links
+  const acronymLinks = page.locator('nav[aria-label="SOLID acronym — jump to a principle"] a');
+  if (await acronymLinks.count() !== 5) {
+    record('HIGH', 'Home', 'SOLID acronym nav should have 5 links');
+  }
+  await acronymLinks.first().click();
+  if (!page.url().includes('single-responsibility')) {
+    record('HIGH', 'Home', 'SOLID acronym link failed');
+  }
+  await page.goto(`${BASE}/`, { waitUntil: 'domcontentloaded' });
 }
 
 async function testPrinciplePage(page, slug) {
