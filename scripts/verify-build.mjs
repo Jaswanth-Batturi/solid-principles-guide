@@ -19,7 +19,7 @@ const slugs = [
 const required = [
   'index.html',
   '404.html',
-  'og-image.jpg',
+  'og-solid-principles.jpg',
   ...slugs.map((s) => `principles/${s}/index.html`),
 ];
 
@@ -33,17 +33,25 @@ for (const file of required) {
   }
 }
 
-const indexHtml = readFileSync(join(dist, 'index.html'), 'utf8');
-if (!indexHtml.includes('SOLID')) {
+const html = readFileSync(join(dist, 'index.html'), 'utf8');
+if (!html.includes('SOLID')) {
   console.error('MISSING: homepage branding');
   failed++;
 }
-if (indexHtml.includes('href="/principles/')) {
+if (html.includes('href="/principles/')) {
   console.error('BROKEN LINK: absolute /principles/ without base path in index');
   failed++;
 }
-if (!indexHtml.includes(`${base}/principles/single-responsibility`)) {
+if (!html.includes(`${base}/principles/single-responsibility`)) {
   console.error('BROKEN LINK: expected base-prefixed principle URLs');
+  failed++;
+}
+if (!html.includes('og-solid-principles.jpg')) {
+  console.error('MISSING og-solid-principles.jpg in og:image meta');
+  failed++;
+}
+if (html.includes('og-image.jpg')) {
+  console.error('STALE og-image.jpg still referenced in HTML');
   failed++;
 }
 

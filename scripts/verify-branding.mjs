@@ -6,7 +6,7 @@ import { readFileSync, existsSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 
 const dist = join(import.meta.dirname, '..', 'dist');
-const ogImage = join(dist, 'og-image.jpg');
+const ogImage = join(dist, 'og-solid-principles.jpg');
 
 const forbidden = [
   'Patterns in Practice',
@@ -33,13 +33,13 @@ function walkHtml(dir, files = []) {
 let failed = 0;
 
 if (!existsSync(ogImage)) {
-  console.error('MISSING og-image.jpg');
+  console.error('MISSING og-solid-principles.jpg');
   failed++;
 } else {
   const size = readFileSync(ogImage).length;
   // Old design-patterns og-image was ~181KB; new SOLID image is ~147KB
   if (size > 175000) {
-    console.error(`STALE og-image.jpg (${size} bytes) — still the design-patterns image`);
+    console.error(`STALE og-solid-principles.jpg (${size} bytes) — still the design-patterns image`);
     failed++;
   }
 }
