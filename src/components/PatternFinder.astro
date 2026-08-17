@@ -1,0 +1,99 @@
+---
+import { finderRules, principles } from '../data/principles';
+import { principlePath } from '../utils/paths';
+
+const examples = [
+  { label: 'God class', text: 'one class handles orders cooking and billing' },
+  { label: 'New promo', text: 'add shipping discount without editing calculator' },
+  { label: 'Subtype breaks', text: 'subclass throws unsupported on parent method' },
+  { label: 'Hardwired dependency', text: 'service creates database connection with new inside' },
+];
+
+const principleUrls = Object.fromEntries(principles.map((p) => [p.slug, principlePath(p.slug)]));
+---
+
+<section id="finder" class="mt-14 scroll-mt-20 border-t border-slate-800 pt-10">
+  <h2 class="text-lg font-semibold text-white">Principle finder</h2>
+  <p class="mt-1 text-sm text-slate-500">Describe your design smell — we suggest which SOLID principle applies.</p>
+
+  <div class="mt-4">
+    <textarea
+      id="finder-input"
+      rows="2"
+      placeholder="e.g. class forced to implement methods it does not need"
+      aria-label="Describe your problem"
+      class="w-full rounded-lg border border-slate-800 bg-slate-900/50 px-3 py-2.5 text-sm text-slate-200 placeholder:text-slate-600 focus:border-indigo-500/60 focus:outline-none focus:ring-1 focus:ring-indigo-500/30"
+    ></textarea>
+  </div>
+
+  <div class="mt-3 flex flex-wrap gap-2" aria-label="Examples">
+    {examples.map((ex) => (
+      <button
+        type="button"
+        data-example={ex.text}
+        class="example-chip rounded-md border border-slate-800 px-2.5 py-1 text-xs text-slate-500 hover:border-slate-600 hover:text-slate-300 transition-colors"
+      >
+        {ex.label}
+      </button>
+    ))}
+  </div>
+
+  <div id="finder-results" class="mt-4 space-y-2" aria-live="polite"></div>
+</section>
+
+<script define:vars={{ finderRules, principles, principleUrls }}>
+  const input = document.getElementById('finder-input');
+  const results = document.getElementById('finder-results');
+
+  const scoreRules = (text) => {
+    const lower = text.toLowerCase();
+    return finderRules
+      .map((rule) => {
+        const hits = rule.keywords.filter((kw) => lower.includes(kw));
+        return { rule, score: hits.length };
+      })
+      .filter((item) => item.score > 0)
+      .sort((a, b) => b.score - a.score);
+  };
+
+  const render = () => {
+    const text = input?.value.trim() ?? '';
+    results.innerHTML = '';
+
+    if (!text) return;
+
+    const matches = scoreRules(text);
+
+    if (matches.length === 0) {
+      results.innerHTML = '<p class="text-sm text-slate-500">No match — try god class, inject, fat interface, or inheritance.</p>';
+      return;
+    }
+
+    matches.slice(0, 3).forEach(({ rule }) => {
+      const slug = rule.principleSlug || rule.patternSlug;
+      const principle = principles.find((p) => p.slug === slug);
+      if (!principle) return;
+
+      const card = document.createElement('a');
+      card.href = principleUrls[slug];
+      card.className =
+        'block rounded-lg border border-slate-800 bg-slate-900/40 px-4 py-3 hover:border-indigo-500/40 hover:bg-slate-900/60 transition-colors';
+      card.innerHTML = `
+        <span class="font-medium text-white">${principle.name}</span>
+        <span class="mt-0.5 block text-sm text-slate-500">${rule.hint}</span>
+      `;
+      results.appendChild(card);
+    });
+  };
+
+  input?.addEventListener('input', render);
+
+  document.querySelectorAll('[data-example]').forEach((chip) => {
+    chip.addEventListener('click', () => {
+      if (!input) return;
+      input.value = chip.getAttribute('data-example') ?? '';
+      input.focus();
+      render();
+    });
+  });
+</script>

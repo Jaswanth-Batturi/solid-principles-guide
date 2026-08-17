@@ -1,0 +1,176 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import CodeToggle from '../../components/CodeToggle.astro';
+import Quiz from '../../components/Quiz.astro';
+import PatternProblem from '../../components/PatternProblem.astro';
+import PatternStory from '../../components/PatternStory.astro';
+import TradeoffCompare from '../../components/TradeoffCompare.astro';
+import WhenToUse from '../../components/WhenToUse.astro';
+import CodeRunner from '../../components/CodeRunner.astro';
+import { principles, getPrinciple, letterLabels } from '../../data/principles';
+import { enrichPrinciple } from '../../data/principles/enrich';
+import { principlePath, sitePath } from '../../utils/paths';
+
+export function getStaticPaths() {
+  return principles.map((principle) => ({
+    params: { slug: principle.slug },
+    props: { principle: enrichPrinciple(principle) },
+  }));
+}
+
+const principle = Astro.props.principle;
+const related = principle.relatedPrinciples.map((slug) => getPrinciple(slug)).filter(Boolean);
+
+const principleIndex = principles.findIndex((p) => p.slug === principle.slug);
+const prevPrinciple = principleIndex > 0 ? principles[principleIndex - 1] : null;
+const nextPrinciple = principleIndex < principles.length - 1 ? principles[principleIndex + 1] : null;
+
+const letterColor: Record<string, string> = {
+  s: 'text-emerald-400/90',
+  o: 'text-sky-400/90',
+  l: 'text-amber-400/90',
+  i: 'text-violet-400/90',
+  d: 'text-rose-400/90',
+};
+
+const sections = [
+  { id: 'story', label: 'Analogy' },
+  { id: 'problem', label: 'Problem' },
+  { id: 'code', label: 'Code' },
+  { id: 'tradeoffs', label: 'Compare' },
+  { id: 'run', label: 'Run it' },
+  { id: 'decision', label: 'When to use' },
+  { id: 'quiz', label: 'Quiz' },
+];
+---
+
+<BaseLayout title={principle.name} description={principle.oneLiner}>
+  <nav class="mb-5 text-sm text-slate-500" aria-label="Breadcrumb">
+    <a href={sitePath()} class="hover:text-indigo-400 transition-colors">Home</a>
+    <span class="mx-2">/</span>
+    <a href={sitePath('#principles')} class="hover:text-indigo-400 transition-colors">Principles</a>
+    <span class="mx-2">/</span>
+    <span class="text-slate-400">{principle.name}</span>
+  </nav>
+
+  <header class="mb-6 max-w-2xl">
+    <div class="flex flex-wrap items-center gap-2 text-sm">
+      <span class={`font-medium ${letterColor[principle.letter]}`}>{letterLabels[principle.letter]}</span>
+    </div>
+    <h1 class="mt-2 text-2xl font-bold text-white sm:text-3xl">{principle.name}</h1>
+    <p class="mt-2 text-base text-slate-400">{principle.oneLiner}</p>
+  </header>
+
+  <nav
+    class="sticky top-[52px] z-40 -mx-4 mb-6 flex gap-2 overflow-x-auto border-b border-slate-800 bg-slate-950/95 px-4 py-2.5 backdrop-blur-md sm:mx-0"
+    aria-label="Page sections"
+  >
+    {sections.map((s) => (
+      <a
+        href={`#${s.id}`}
+        class="section-jump shrink-0 rounded-md px-3 py-1 text-xs font-medium text-slate-500 hover:text-white transition-colors"
+      >
+        {s.label}
+      </a>
+    ))}
+  </nav>
+
+  <div class="space-y-8">
+    <div id="story" class="scroll-mt-36">
+      <PatternStory
+        slug={principle.slug}
+        icon={principle.analogyIcon}
+        example={principle.exampleName}
+        overview={principle.overview}
+        steps={principle.sceneSteps}
+      />
+    </div>
+
+    <PatternProblem problemStatement={principle.problemStatement} />
+
+    <div id="code" class="scroll-mt-36">
+      <CodeToggle
+        before={principle.displayCodeBefore}
+        after={principle.displayCodeAfter}
+        beforeHint={principle.codeBeforeHint}
+        afterHint={principle.codeAfterHint}
+        defaultView="before"
+      />
+    </div>
+
+    <div id="tradeoffs" class="scroll-mt-36">
+      <TradeoffCompare
+        patternName={principle.name}
+        withoutPains={principle.withoutPatternPains}
+        withWins={principle.withPatternWins}
+      />
+    </div>
+
+    <div id="run" class="scroll-mt-36">
+      <CodeRunner code={principle.runDemo} runExpect={principle.runExpect} />
+    </div>
+
+    <WhenToUse
+      patternName={principle.name}
+      useWhen={principle.whenToUse}
+      skipWhen={principle.whenNotToUse}
+    />
+
+    <div id="quiz" class="scroll-mt-36">
+      <Quiz questions={principle.quiz} />
+    </div>
+
+    {
+      related.length > 0 && (
+        <section class="border-t border-slate-800 pt-6">
+          <h2 class="text-sm font-medium text-slate-400">Related</h2>
+          <div class="mt-2 flex flex-wrap gap-2">
+            {related.map((p) => (
+              <a
+                href={principlePath(p!.slug)}
+                class="rounded-md border border-slate-800 px-2.5 py-1 text-sm text-slate-500 hover:border-slate-600 hover:text-white transition-colors"
+              >
+                {p!.name}
+              </a>
+            ))}
+          </div>
+        </section>
+      )
+    }
+
+    <nav class="flex justify-between gap-4 border-t border-slate-800 pt-5 text-sm text-slate-500" aria-label="Principle navigation">
+      {prevPrinciple ? (
+        <a href={principlePath(prevPrinciple.slug)} class="hover:text-indigo-300">← {prevPrinciple.name}</a>
+      ) : (
+        <span />
+      )}
+      {nextPrinciple && (
+        <a href={principlePath(nextPrinciple.slug)} class="hover:text-indigo-300">{nextPrinciple.name} →</a>
+      )}
+    </nav>
+  </div>
+</BaseLayout>
+
+<script>
+  const nav = document.querySelector('nav[aria-label="Page sections"]');
+  const links = nav?.querySelectorAll('.section-jump');
+  const ids = ['story', 'problem', 'code', 'tradeoffs', 'run', 'decision', 'quiz'];
+
+  const sync = () => {
+    if (!links) return;
+    let active = ids[0];
+    for (const id of ids) {
+      const el = document.getElementById(id);
+      if (el && el.getBoundingClientRect().top <= 120) active = id;
+    }
+    links.forEach((link) => {
+      const on = link.getAttribute('href') === `#${active}`;
+      link.classList.toggle('text-white', on);
+      link.classList.toggle('bg-indigo-600/30', on);
+      link.classList.toggle('text-slate-500', !on);
+    });
+  };
+
+  window.addEventListener('scroll', sync, { passive: true });
+  sync();
+</script>

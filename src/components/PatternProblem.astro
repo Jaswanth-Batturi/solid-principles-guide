@@ -1,0 +1,16 @@
+---
+interface Props {
+  problemStatement: string;
+}
+
+const { problemStatement } = Astro.props;
+---
+
+<section
+  id="problem"
+  class="scroll-mt-36 rounded-xl border border-rose-500/25 bg-gradient-to-br from-rose-950/40 via-slate-950/50 to-slate-900/40 p-5 sm:p-6"
+  aria-labelledby="problem-heading"
+>
+  <h2 id="problem-heading" class="text-lg font-semibold text-white">The problem</h2>
+  <p class="mt-3 text-base sm:text-lg leading-relaxed text-slate-200">{problemStatement}</p>
+</section>

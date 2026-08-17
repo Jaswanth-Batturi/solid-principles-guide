@@ -1,0 +1,168 @@
+---
+interface Props {
+  code: string;
+  runExpect: string;
+}
+
+const { code, runExpect } = Astro.props;
+const frameId = `oc-runner-${Math.random().toString(36).slice(2, 9)}`;
+const embedSrc =
+  'https://onecompiler.com/embed/java?listenToEvents=true&hideLanguageSelection=true&theme=dark&hideTitle=true&hideNewFileOption=true';
+---
+
+<section
+  class="rounded-2xl border border-slate-800 bg-slate-900/40 overflow-hidden"
+  data-code-runner
+  data-initial-code={code}
+>
+  <div class="border-b border-slate-800 px-4 py-3 sm:px-5">
+    <h3 class="text-lg font-semibold text-white">Run it</h3>
+    <p class="mt-1 text-sm text-slate-500">Starts with the Fixed code. Load Problem or Fixed from above, or paste your own.</p>
+    <span class="hidden" data-run-expect>{runExpect}</span>
+  </div>
+
+  <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 px-4 py-2">
+    <span data-runner-status class="text-xs text-slate-500" role="status">Loading editor…</span>
+    <div class="flex items-center gap-3">
+      <button
+        type="button"
+        data-runner-copy
+        class="text-xs text-slate-400 hover:text-white transition-colors"
+      >
+        Copy editor code
+      </button>
+      <a
+        href="https://onecompiler.com/java"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="text-xs text-indigo-400 hover:text-indigo-300"
+      >
+        Open full editor ↗
+      </a>
+    </div>
+  </div>
+
+  <div
+    data-runner-output
+    class="hidden border-b border-slate-800 bg-slate-950/80 px-4 py-2 text-xs text-slate-400"
+    role="log"
+    aria-live="polite"
+  ></div>
+
+  <div class="relative min-h-[420px] bg-[#1e1e1e]">
+    <div
+      data-runner-loading
+      class="absolute inset-0 z-10 flex items-center justify-center text-sm text-slate-400 bg-slate-950"
+    >
+      <span class="inline-block h-7 w-7 animate-spin rounded-full border-2 border-indigo-500 border-t-transparent" aria-hidden="true"></span>
+    </div>
+    <iframe
+      id={frameId}
+      title="Java code runner"
+      src={embedSrc}
+      class="w-full min-h-[420px] border-0 bg-[#1e1e1e] opacity-0 transition-opacity duration-500"
+      data-oc-frame
+      loading="lazy"
+      allow="clipboard-write"
+    ></iframe>
+  </div>
+</section>
+
+<script>
+  import { javaToCompilerFiles } from '../utils/runner-code.ts';
+
+  const RUNNER_EVENT = 'pattern-runner-load';
+
+  function setupRunner(section: Element) {
+    const iframe = section.querySelector('[data-oc-frame]') as HTMLIFrameElement | null;
+    const loading = section.querySelector('[data-runner-loading]');
+    const status = section.querySelector('[data-runner-status]');
+    const output = section.querySelector('[data-runner-output]');
+    const copyBtn = section.querySelector('[data-runner-copy]');
+    let currentCode = '';
+
+    const revealEditor = () => {
+      loading?.classList.add('hidden');
+      iframe?.classList.remove('opacity-0');
+      iframe?.classList.add('opacity-100');
+    };
+
+    const setStatus = (text: string, ok = true) => {
+      if (!status) return;
+      status.textContent = text;
+      status.classList.toggle('text-emerald-400/90', ok);
+      status.classList.toggle('text-rose-400/90', !ok);
+      status.classList.toggle('text-slate-500', !ok && !text.includes('Failed'));
+    };
+
+    const showOutput = (text: string) => {
+      if (!output || !text) return;
+      output.textContent = text;
+      output.classList.remove('hidden');
+    };
+
+    const populateEditor = (code: string) => {
+      if (!iframe || !code.trim()) return;
+      currentCode = code;
+      const files = javaToCompilerFiles(code);
+      iframe.contentWindow?.postMessage({ eventType: 'populateCode', language: 'java', files }, '*');
+      revealEditor();
+      setStatus('Ready — click Run ▶ in the editor');
+    };
+
+    window.addEventListener('message', (event) => {
+      if (!iframe || event.source !== iframe.contentWindow) return;
+      const data = event.data;
+      if (!data || typeof data !== 'object') return;
+
+      const type = data.eventType || data.type || data.event;
+      if (type === 'populateCodeSuccess' || type === 'codePopulated') {
+        revealEditor();
+        setStatus('Ready — click Run ▶ in the editor');
+      }
+      if (type === 'codeRunning' || type === 'running') {
+        setStatus('Running…');
+      }
+      if (type === 'codeFinished' || type === 'finished' || type === 'runComplete') {
+        setStatus('Done — check output below the editor');
+      }
+      const out =
+        data.output || data.result || data.consoleOutput || data.runOutput || data.message;
+      if (typeof out === 'string' && out.trim()) {
+        showOutput(`Console: ${out.trim()}`);
+      }
+    });
+
+    window.addEventListener(RUNNER_EVENT, (event: Event) => {
+      const detail = (event as CustomEvent<{ code?: string }>).detail;
+      if (detail?.code) populateEditor(detail.code);
+    });
+
+    if (iframe) {
+      iframe.addEventListener('load', () => {
+        const initial = section.getAttribute('data-initial-code');
+        if (initial) {
+          setTimeout(() => populateEditor(initial), 400);
+          setTimeout(() => populateEditor(initial), 1500);
+        }
+      });
+    }
+
+    copyBtn?.addEventListener('click', async () => {
+      if (!currentCode) return;
+      try {
+        await navigator.clipboard.writeText(currentCode);
+        copyBtn.textContent = 'Copied!';
+        setTimeout(() => {
+          copyBtn.textContent = 'Copy editor code';
+        }, 1500);
+      } catch {
+        copyBtn.textContent = 'Copy failed';
+      }
+    });
+  }
+
+  document.querySelectorAll('[data-code-runner]').forEach((section) => {
+    setupRunner(section);
+  });
+</script>

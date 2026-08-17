@@ -1,0 +1,27 @@
+---
+import { highlightJava } from '../utils/highlight';
+
+interface Props {
+  code: string;
+  class?: string;
+}
+
+const { code, class: className = '' } = Astro.props;
+const html = await highlightJava(code);
+---
+
+<div class:list={['highlighted-code overflow-x-auto text-sm leading-relaxed', className]} set:html={html} />
+
+<style>
+  .highlighted-code :global(pre) {
+    margin: 0;
+    padding: 1rem;
+    background: transparent !important;
+    overflow-x: auto;
+  }
+  .highlighted-code :global(code) {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 0.8125rem;
+    line-height: 1.6;
+  }
+</style>

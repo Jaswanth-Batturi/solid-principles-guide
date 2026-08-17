@@ -1,0 +1,186 @@
+---
+import { highlightJava } from '../utils/highlight';
+
+interface Props {
+  before: string;
+  after: string;
+  beforeHint?: string;
+  afterHint?: string;
+  defaultView?: 'before' | 'after';
+}
+
+const { before, after, beforeHint, afterHint, defaultView = 'before' } = Astro.props;
+const id = `code-${Math.random().toString(36).slice(2, 9)}`;
+const beforeHtml = await highlightJava(before);
+const afterHtml = await highlightJava(after);
+---
+
+<section class="space-y-4">
+  <div>
+    <h2 class="text-lg font-semibold text-white">Code: problem vs fix</h2>
+    <p class="mt-1 text-sm text-slate-500">Full runnable examples — copy or load into Run it below.</p>
+  </div>
+
+  <div
+    class="code-toggle rounded-xl border border-slate-800 bg-slate-900/40 overflow-hidden"
+    data-code-toggle={id}
+    data-before-raw={before}
+    data-after-raw={after}
+  >
+    <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 px-3 py-2">
+      <div class="flex gap-2" role="tablist" aria-label="Code comparison">
+        <button
+          type="button"
+          data-view="before"
+          role="tab"
+          class:list={[
+            'code-tab rounded-md px-3 py-1.5 text-xs font-medium transition-colors',
+            defaultView === 'before' ? 'bg-rose-600/80 text-white' : 'text-slate-400',
+          ]}
+          aria-pressed={defaultView === 'before' ? 'true' : 'false'}
+          aria-selected={defaultView === 'before' ? 'true' : 'false'}
+        >
+          Problem
+        </button>
+        <button
+          type="button"
+          data-view="after"
+          role="tab"
+          class:list={[
+            'code-tab rounded-md px-3 py-1.5 text-xs font-medium transition-colors',
+            defaultView === 'after' ? 'bg-emerald-600/80 text-white' : 'text-slate-400',
+          ]}
+          aria-pressed={defaultView === 'after' ? 'true' : 'false'}
+          aria-selected={defaultView === 'after' ? 'true' : 'false'}
+        >
+          Fixed
+        </button>
+      </div>
+      <div class="flex items-center gap-2">
+        <button
+          type="button"
+          data-load-runner
+          class="rounded-lg border border-indigo-500/40 px-3 py-1.5 text-xs text-indigo-300 hover:border-indigo-400 hover:text-white transition-colors"
+        >
+          Load in runner
+        </button>
+        <button
+          type="button"
+          data-copy
+          class="rounded-lg border border-slate-700 px-3 py-1.5 text-xs text-slate-400 hover:border-indigo-500 hover:text-white transition-colors"
+        >
+          Copy code
+        </button>
+      </div>
+    </div>
+    <p data-hint="before" class={`border-b border-rose-500/25 bg-rose-950/30 px-4 py-3.5 text-base leading-relaxed text-rose-100/90 ${defaultView === 'before' ? '' : 'hidden'}`}>
+      {beforeHint ?? 'Notice: tight coupling, hard to extend, one change forces many edits.'}
+    </p>
+    <p data-hint="after" class={`border-b border-emerald-500/25 bg-emerald-950/30 px-4 py-3.5 text-base leading-relaxed text-emerald-100/90 ${defaultView === 'after' ? '' : 'hidden'}`}>
+      {afterHint ?? 'Notice: roles are separated — you can add new behavior without breaking old code.'}
+    </p>
+    <div data-panel="before" class={`highlighted-panel ${defaultView === 'before' ? '' : 'hidden'}`} aria-hidden={defaultView !== 'before' ? 'true' : 'false'}>
+      <div class="highlighted-code overflow-x-auto leading-relaxed" set:html={beforeHtml} />
+    </div>
+    <div data-panel="after" class={`highlighted-panel ${defaultView === 'after' ? '' : 'hidden'}`} aria-hidden={defaultView !== 'after' ? 'true' : 'false'}>
+      <div class="highlighted-code overflow-x-auto leading-relaxed" set:html={afterHtml} />
+    </div>
+  </div>
+</section>
+
+<style>
+  .highlighted-panel :global(pre) {
+    margin: 0;
+    padding: 1.125rem 1.25rem;
+    background: transparent !important;
+    overflow-x: auto;
+  }
+  .highlighted-panel :global(code) {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 0.9375rem;
+    line-height: 1.7;
+  }
+</style>
+
+<script define:vars={{ defaultView }}>
+  document.querySelectorAll('[data-code-toggle]').forEach((root) => {
+    const beforePanel = root.querySelector('[data-panel="before"]');
+    const afterPanel = root.querySelector('[data-panel="after"]');
+    const hintBefore = root.querySelector('[data-hint="before"]');
+    const hintAfter = root.querySelector('[data-hint="after"]');
+    const tabs = root.querySelectorAll('.code-tab');
+    const copyBtn = root.querySelector('[data-copy]');
+    const loadBtn = root.querySelector('[data-load-runner]');
+
+    let active = defaultView ?? 'before';
+
+    const getActiveText = () => {
+      const raw = active === 'before' ? root.getAttribute('data-before-raw') : root.getAttribute('data-after-raw');
+      return raw ?? '';
+    };
+
+    const show = (view) => {
+      active = view;
+      beforePanel?.classList.toggle('hidden', view !== 'before');
+      afterPanel?.classList.toggle('hidden', view !== 'after');
+      beforePanel?.setAttribute('aria-hidden', view !== 'before' ? 'true' : 'false');
+      afterPanel?.setAttribute('aria-hidden', view !== 'after' ? 'true' : 'false');
+      hintBefore?.classList.toggle('hidden', view !== 'before');
+      hintAfter?.classList.toggle('hidden', view !== 'after');
+      tabs.forEach((tab) => {
+        const isActive = tab.getAttribute('data-view') === view;
+        const isBefore = tab.getAttribute('data-view') === 'before';
+        tab.setAttribute('aria-pressed', String(isActive));
+        tab.setAttribute('aria-selected', String(isActive));
+        tab.classList.toggle('bg-rose-600/80', isActive && isBefore);
+        tab.classList.toggle('bg-emerald-600/80', isActive && !isBefore);
+        tab.classList.toggle('text-white', isActive);
+        tab.classList.toggle('text-slate-400', !isActive);
+      });
+    };
+
+    tabs.forEach((tab) => {
+      tab.addEventListener('click', () => show(tab.getAttribute('data-view') ?? 'after'));
+    });
+
+    show(defaultView ?? 'before');
+
+    loadBtn?.addEventListener('click', () => {
+      const text = getActiveText();
+      if (!text) return;
+      window.dispatchEvent(new CustomEvent('pattern-runner-load', { detail: { code: text } }));
+      document.getElementById('run')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      loadBtn.textContent = 'Loaded!';
+      setTimeout(() => {
+        loadBtn.textContent = 'Load in runner';
+      }, 1500);
+    });
+
+    copyBtn?.addEventListener('click', async () => {
+      const text = getActiveText();
+      if (!text) return;
+      let ok = false;
+      try {
+        await navigator.clipboard.writeText(text);
+        ok = true;
+      } catch {
+        try {
+          const ta = document.createElement('textarea');
+          ta.value = text;
+          ta.style.position = 'fixed';
+          ta.style.left = '-9999px';
+          document.body.appendChild(ta);
+          ta.select();
+          ok = document.execCommand('copy');
+          document.body.removeChild(ta);
+        } catch {
+          ok = false;
+        }
+      }
+      copyBtn.textContent = ok ? 'Copied!' : 'Copy failed';
+      setTimeout(() => {
+        copyBtn.textContent = 'Copy code';
+      }, 1500);
+    });
+  });
+</script>

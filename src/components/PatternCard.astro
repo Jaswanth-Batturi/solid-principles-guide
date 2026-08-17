@@ -1,0 +1,44 @@
+---
+import type { Principle } from '../data/principles';
+import { letterLabels } from '../data/principles';
+import { getIllustration } from '../data/principles/principle-illustrations';
+import { principlePath } from '../utils/paths';
+
+interface Props {
+  pattern: Principle;
+}
+
+const { pattern } = Astro.props;
+const href = principlePath(pattern.slug);
+const illo = getIllustration(pattern.slug, pattern.analogyIcon);
+const letterColor: Record<string, string> = {
+  s: 'text-emerald-400/90',
+  o: 'text-sky-400/90',
+  l: 'text-amber-400/90',
+  i: 'text-violet-400/90',
+  d: 'text-rose-400/90',
+};
+---
+
+<a
+  href={href}
+  class="group block rounded-xl border border-slate-800/80 bg-slate-900/40 p-4 transition hover:border-slate-600 hover:bg-slate-900/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+>
+  <div class="flex items-start gap-3">
+    <div
+      class="shrink-0 w-14 h-14 rounded-lg border border-slate-800 bg-indigo-950/30 p-2 flex items-center justify-center overflow-hidden"
+      aria-hidden="true"
+    >
+      <div class="w-full pointer-events-none" set:html={illo.svg} />
+    </div>
+    <div class="min-w-0 flex-1">
+      <div class="flex items-center justify-between gap-2">
+        <h3 class="font-medium text-white group-hover:text-indigo-300 transition-colors">{pattern.name}</h3>
+        <span class={`text-[10px] font-medium uppercase tracking-wide shrink-0 ${letterColor[pattern.letter]}`}>
+          {pattern.letter.toUpperCase()}
+        </span>
+      </div>
+      <p class="mt-1.5 text-sm leading-snug text-slate-500">{pattern.oneLiner}</p>
+    </div>
+  </div>
+</a>
