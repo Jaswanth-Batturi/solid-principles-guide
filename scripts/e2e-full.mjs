@@ -12,7 +12,7 @@ const SLUGS = [
   'dependency-inversion',
 ];
 
-const SECTION_HEADINGS = ['Real-life analogy', 'Without vs with', 'Code: problem vs fix', 'Run it', 'Quiz'];
+const SECTION_HEADINGS = ['Real-life analogy', 'Without vs with the principle', 'Code: problem vs fix', 'Run it', 'Quiz'];
 const SECTION_IDS = ['story', 'problem', 'code', 'tradeoffs', 'run', 'decision', 'quiz'];
 
 const issues = [];
@@ -97,9 +97,8 @@ async function testPrinciplePage(page, slug) {
   await testCodeToggle(page, slug);
   await completeQuiz(page, slug);
 
-  const frame = page.locator('[data-oc-frame]');
-  if (await frame.count() === 0) {
-    record('HIGH', slug, 'Code runner iframe missing');
+  if (!body.includes('Expected output:')) {
+    record('MED', slug, 'Expected output not visible');
   }
 
   const links = await page.locator('a[href]').evaluateAll((els) =>

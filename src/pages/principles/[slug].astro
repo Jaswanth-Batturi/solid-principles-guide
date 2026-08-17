@@ -106,9 +106,7 @@ const sections = [
       />
     </div>
 
-    <div id="run" class="scroll-mt-36">
-      <CodeRunner code={principle.runDemo} runExpect={principle.runExpect} />
-    </div>
+    <CodeRunner code={principle.runDemo} runExpect={principle.runExpect} tryItSteps={principle.tryItSteps} />
 
     <WhenToUse
       patternName={principle.name}

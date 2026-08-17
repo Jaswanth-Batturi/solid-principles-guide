@@ -23,8 +23,8 @@ export const principleStories: Record<string, PrincipleStory> = {
       'Same restaurant example: without SRP, one employee class does everything. With SRP, Waiter, Chef, and Cashier each own one step of the meal.',
     scene: [
       'A customer sits down and tells the waiter “margherita pizza.” The waiter writes the ticket and passes it to the kitchen — they do not leave the dining room to operate the oven.',
-      'The chef reads the ticket and cooks the pizza. When it is ready, the cashier prints the bill from the order total — not from whatever the waiter remembers off the top of their head.',
-      'If one person tried to do all three jobs during rush hour, orders would be wrong, food would burn, and payments would be missed. Splitting roles keeps each step reliable.',
+      'During rush hour one overloaded employee takes the order, runs to the grill, and forgets to ring up the bill — or charges the wrong table. Orders stack up because nobody owns just one step.',
+      'Split the work: waiter tickets the order, chef cooks from the ticket, cashier bills from the order total. Each role does one job, so menu changes do not break payment logic.',
     ],
     without: [
       'RestaurantEmployee mixes takeOrder(), cook(), and bill() — three unrelated reasons to change in one class.',
@@ -52,8 +52,8 @@ export const principleStories: Record<string, PrincipleStory> = {
       'Same shipping example: without OCP, you edit the calculator for each promo. With OCP, you add a new ShippingRule class and plug it in.',
     scene: [
       'Today’s rule is flat $5 shipping. The calculator applies it and prints the fee — simple.',
-      'Marketing launches “free shipping over $50.” With a rule interface, you add FreeOverFiftyRule without touching yesterday’s flat-rate logic.',
-      'Next month: “10% of subtotal.” Another new class — the calculator loop stays the same; only the rule list grows.',
+      'Marketing wants “free shipping over $50,” then “10% off,” then a holiday promo. Every new idea means opening the calculator class and adding another else-if branch — and retesting every old promo.',
+      'Each promo becomes its own ShippingRule class. The calculator loops rules; adding Tuesday’s deal means a new file, not surgery on code that already shipped.',
     ],
     without: [
       'Every promo adds another else-if branch in one method — merge conflicts every sprint.',
@@ -80,9 +80,9 @@ export const principleStories: Record<string, PrincipleStory> = {
     tradeoffIntro:
       'Same rental desk: without LSP, ElectricCar breaks code that assumes every car refuels. With LSP, drive() is on Vehicle; refuel() only on cars that actually have a gas tank.',
     scene: [
-      'A customer rents “any available car.” The system calls vehicle.drive() — works for gas and electric alike.',
-      'Before return, the clerk runs refuel() only on cars that implement Refuelable. Electric cars skip that step — no exception, no surprise.',
-      'Callers never need instanceof ElectricCar to avoid blowing up — the type system matches real-world behavior.',
+      'A customer rents “any available car.” The desk hands over keys and expects every car to drive off the lot — gas or electric.',
+      'The system treats every car like a gas car: before return it always calls refuel(). Electric rentals throw an exception — the customer did nothing wrong, the software lied about “any car works.”',
+      'Put drive() on Vehicle for every car. Put refuel() only on Refuelable gas cars. The desk runs the right checklist per type — no instanceof hacks, no surprises.',
     ],
     without: [
       'ElectricCar extends GasCar but refuel() throws — callers crash on a valid Vehicle reference.',
@@ -109,9 +109,9 @@ export const principleStories: Record<string, PrincipleStory> = {
     tradeoffIntro:
       'Same office gear: without ISP, SimplePhone stubs fax. With ISP, Callable and Faxable are separate — clients ask only for what they need.',
     scene: [
-      'You pick up the desk phone and dial a client — Callable.call() is all you need.',
-      'Down the hall, the copier prints a contract and faxes a signed copy — it implements Printable and Faxable.',
-      'Nobody hands the receptionist a “smart device” manual that says “press fax on your mobile” — roles match capabilities.',
+      'You pick up the desk phone and dial a client — all you need is to make a call.',
+      'IT buys phones that must implement print(), scan(), and fax() because SmartDevice demands it. Reception’s mobile throws “not supported” when someone taps Fax in the shared app.',
+      'Split Callable, Printable, and Faxable. Phones implement Callable only; copiers implement print and fax. Each device exposes what it actually does.',
     ],
     without: [
       'SmartDevice bundles call, print, and fax — phones throw on half the methods.',
@@ -138,9 +138,9 @@ export const principleStories: Record<string, PrincipleStory> = {
     tradeoffIntro:
       'Same light switch: without DIP, the switch builds a Philips bulb. With DIP, it receives any Light through the constructor.',
     scene: [
-      'You flip the switch. It calls light.illuminate() — it does not care which bulb is screwed in.',
-      'Moving day: you plug an LedStrip into the same switch wiring. The switch class never changes.',
-      'Tests inject a FakeLight that records flip() — no real hardware needed.',
+      'You flip the wall switch. The room should light up — the switch’s only job is to connect power to whatever bulb is installed.',
+      'The switch is soldered to one Philips bulb inside the wall. Swap to LED and you must rip out and rewrite the switch — not replace the bulb.',
+      'Wire the switch to a standard Light outlet. Plug in Philips today, LED tomorrow — the switch code never changes; only the injected bulb does.',
     ],
     without: [
       'LightSwitch constructs PhilipsBulb directly — vendor lock-in in one line.',

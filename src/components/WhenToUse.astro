@@ -13,7 +13,7 @@ const { patternName, useWhen, skipWhen } = Astro.props;
 
   <div class="mt-5 grid gap-4 sm:grid-cols-2">
     <div class="rounded-xl border border-emerald-500/30 bg-gradient-to-br from-emerald-950/45 to-slate-950/40 p-5">
-      <h3 class="text-sm font-semibold uppercase tracking-wide text-emerald-300">Use {patternName}</h3>
+      <h3 class="text-sm font-semibold uppercase tracking-wide text-emerald-300">Apply it when</h3>
       <p class="mt-2 text-sm text-emerald-200/70">Good fit when:</p>
       <ul class="mt-3 space-y-3 text-base leading-relaxed text-slate-300">
         {useWhen.map((item, i) => (
@@ -26,7 +26,7 @@ const { patternName, useWhen, skipWhen } = Astro.props;
     </div>
 
     <div class="rounded-xl border border-rose-500/30 bg-gradient-to-br from-rose-950/45 to-slate-950/40 p-5">
-      <h3 class="text-sm font-semibold uppercase tracking-wide text-rose-300">Skip {patternName}</h3>
+      <h3 class="text-sm font-semibold uppercase tracking-wide text-rose-300">Skip it when</h3>
       <p class="mt-2 text-sm text-rose-200/70">Avoid when:</p>
       <ul class="mt-3 space-y-3 text-base leading-relaxed text-slate-300">
         {skipWhen.map((item, i) => (

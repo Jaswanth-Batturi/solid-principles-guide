@@ -33,7 +33,7 @@ export type FinderRuleLegacy = FinderRule & { patternSlug: string };
 
 export const finderRules: FinderRule[] = [
   {
-    keywords: ['one job', 'single responsibility', 'god class', 'too many duties', 'waiter chef'],
+    keywords: ['one job', 'one class', 'single responsibility', 'god class', 'too many duties', 'waiter chef', 'orders cooking', 'billing'],
     principleSlug: 'single-responsibility',
     hint: 'Split classes so each has only one reason to change',
   },

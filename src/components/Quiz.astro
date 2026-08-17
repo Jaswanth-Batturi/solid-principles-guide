@@ -10,7 +10,7 @@ const quizId = `quiz-${Math.random().toString(36).slice(2, 9)}`;
 ---
 
 <section class="rounded-xl border border-slate-800 bg-slate-900/40 p-4 sm:p-5" data-quiz={quizId} data-questions={JSON.stringify(questions)}>
-  <h2 class="text-base font-semibold text-white">Quiz</h2>
+  <h2 class="text-lg font-semibold text-white">Quiz</h2>
 
   <div class="mt-4 flex gap-2" data-quiz-progress aria-label="Question progress"></div>
   <div class="mt-4" data-quiz-body></div>
